@@ -2,15 +2,8 @@ package fr.formation.dto.request;
 
 import java.math.BigDecimal;
 
-import jakarta.ws.rs.QueryParam;
-
-public class CreateProduitRequest {
-
-    @QueryParam("libelle") // mis en commentaires pour tester le post mais on en a
-    // besoin pour les méthodes avec @BeanParam
+public class CreateOrUpdateProduitRequest {
     private String libelle;
-
-    @QueryParam("prix")
     private BigDecimal prix;
 
     public String getLibelle() {
@@ -28,5 +21,4 @@ public class CreateProduitRequest {
     public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
-
 }
