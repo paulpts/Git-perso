@@ -46,9 +46,9 @@ public class ProduitResource {
     public ProduitResponse findById(@PathParam("id") int id) {
         log.debug("Recherche du produit {}", id);
 
-        this.service.findById(id);
+        Produit produit = this.service.findById(id);
 
-        return new ProduitResponse();
+        return new ProduitResponse(produit.getId(), produit.getLibelle(), produit.getPrix());
     }
 
     @Path("/create")

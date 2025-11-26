@@ -30,8 +30,9 @@ public class ProduitService {
 
     public Produit findById(int id) {
         log.debug("Récupération du produit {}", id);
+        Produit produit = repository.findById(id);
 
-        return new Produit();
+        return produit;
     }
 
     @Transactional
@@ -47,13 +48,23 @@ public class ProduitService {
         return produit;
     }
 
+    @Transactional
     public Produit update(int id, CreateOrUpdateProduitRequest request) {
         log.debug("Mise à jour du produit {}", id);
 
-        return new Produit();
+        Produit produit = repository.findById(id);
+
+        produit.setLibelle(request.getLibelle());
+        produit.setPrix(request.getPrix());
+
+        this.repository.persist(produit);
+
+        return produit;
     }
 
+    @Transactional
     public void deleteById(int id) {
         log.debug("Suppression du produit {}", id);
+        this.repository.deleteById(id);
     }
 }

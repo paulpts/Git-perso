@@ -7,6 +7,17 @@ public class ProduitResponse {
     private String libelle;
     private BigDecimal prix;
 
+    
+
+    public ProduitResponse(int id, String libelle, BigDecimal prix) {
+        this.id = id;
+        this.libelle = libelle;
+        this.prix = prix;
+    }
+
+    public ProduitResponse() {
+    }
+
     public int getId() {
         return id;
     }
