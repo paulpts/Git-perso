@@ -10,6 +10,7 @@ import fr.formation.dto.request.CreateOrUpdateProduitRequest;
 import fr.formation.model.Produit;
 import fr.formation.repo.ProduitRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ProduitService {
@@ -33,10 +34,17 @@ public class ProduitService {
         return new Produit();
     }
 
+    @Transactional
     public Produit create(CreateOrUpdateProduitRequest request) {
-        log.debug("Création du produit {}", request.getLibelle());
+        // log.debug("Création du produit {}", request.getLibelle());
 
-        return new Produit();
+        Produit produit = new Produit();
+
+        produit.setLibelle(request.getLibelle());
+        produit.setPrix(request.getPrix());
+
+        this.repository.persist(produit);
+        return produit;
     }
 
     public Produit update(int id, CreateOrUpdateProduitRequest request) {
