@@ -2,6 +2,7 @@ package fr.formation.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import fr.formation.dto.response.ProduitResponse;
 import fr.formation.model.Produit;
 import fr.formation.service.ProduitService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -30,10 +32,12 @@ public class ProduitResource {
     private ProduitService service;
 
     @GET
-    public List<Produit> findAll() {
+    public List<ProduitResponse> findAll() {
         log.debug("Recherche de la liste des produits");
 
-        return this.service.findAll();
+        return this.service.findAll().stream()
+                .map(ProduitResponse::convert)
+                .toList();
     }
 
     // @GET
@@ -43,12 +47,16 @@ public class ProduitResource {
 
     @Path("/{id}")
     @GET
-    public ProduitResponse findById(@PathParam("id") int id) {
+    public Response findById(@PathParam("id") int id) {
         log.debug("Recherche du produit {}", id);
 
-        Produit produit = this.service.findById(id);
+        Optional<Produit> optProduit = this.service.findById(id);
 
-        return new ProduitResponse(produit.getId(), produit.getLibelle(), produit.getPrix());
+        if (optProduit.isEmpty()) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(ProduitResponse.convert(optProduit.get())).build();
     }
 
     @Path("/create")
@@ -66,14 +74,14 @@ public class ProduitResource {
     }
 
     @POST
-    public Response create(CreateOrUpdateProduitRequest request) {
+    public Response create(@Valid CreateOrUpdateProduitRequest request) {
         log.debug("Le nom du produit est : {}", request.getLibelle());
         log.debug("Le prix du produit est : {}", request.getPrix());
 
-        this.service.create(request);
+        Produit produit = this.service.create(request);
 
         return Response.status(Status.CREATED)
-                .entity(Map.of("id", 1))
+                .entity(Map.of("id", produit.getId()))
                 .build();
     }
 
