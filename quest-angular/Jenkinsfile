@@ -7,8 +7,9 @@ pipeline {
                 docker {
                     image 'node:lts-bullseye'
                     args '''
-                        -v $HOME/.npm:/root/.npmm2:z
+                        -v $HOME/.npm:/root/.npm:z
                         -u root
+                        --network devops
                     '''
                     reuseNode true // Sans ça, il y aura un 2eme workspace
                 }
@@ -19,6 +20,16 @@ pipeline {
                     steps {
                         dir('ANGULAR/quest-angular') {
                             sh 'npm install'
+                        }
+                    }
+                }
+
+                stage('Analyse Sonar') {
+                    steps {
+                        dir('ANGULAR/quest-angular') {
+                            withSonarQubeEnv('SonarQube') {
+                                sh './node_modules/.bin/sonar-scanner -Dsonar.projectKey=quest-angular'
+                            }
                         }
                     }
                 }
@@ -44,7 +55,7 @@ pipeline {
         stage('Docker Deploy') {
             steps {
                 dir('DOCKER/commandes/compose/quest') {
-                    sh 'docker compose up -d --build angular'
+                    sh 'docker compose up -d --no-deps --build angular'
                 }
             }
         }

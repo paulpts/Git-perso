@@ -2,9 +2,9 @@ package quest.repo;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
-import quest.model.Matiere;
+import quest.model.Utilisateur;
 
 @ApplicationScoped
-public class MatiereRepository implements PanacheRepositoryBase<Matiere, Integer> {
+public class UtilisateurRepository implements PanacheRepositoryBase<Utilisateur, String> {
 
 }

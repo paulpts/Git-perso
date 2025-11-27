@@ -1,79 +1,78 @@
 package quest.service;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import quest.repo.MatiereRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import quest.dto.request.CreateOrUpdateMatiereRequest;
 import quest.model.Matiere;
+import quest.repo.MatiereRepository;
 
 @ApplicationScoped
 public class MatiereService {
+    private final static Logger log = LoggerFactory.getLogger(MatiereService.class);
 
-	private final static Logger log = LoggerFactory.getLogger(MatiereService.class);
+    private final MatiereRepository repository;
 
-	private final MatiereRepository repoMatiere;
+    public MatiereService(MatiereRepository repository) {
+        this.repository = repository;
+    }
 
-	public MatiereService(MatiereRepository repoMatiere) {
-		this.repoMatiere = repoMatiere;
-	}
+    public Stream<Matiere> findAll() {
+        log.debug("Liste des produits");
 
-	public Optional<Matiere> getById(Integer id) {
-		log.error("On pioche la matiere{} dans la base de données", id);
-		return this.repoMatiere.findByIdOptional(id);
-	}
+        return this.repository.findAll().stream();
+    }
 
-	public List<Matiere> getAll() {
-		return this.repoMatiere.findAll().list();
-	}
+    public Optional<Matiere> findById(int id) {
+        log.debug("Récupération de la matière {}", id);
 
-	// public List<Matiere> getAllByLibelleLike(String recherche)
-	// {
-	// return this.repoMatiere.findByLibelleContaining(recherche).list();
-	// }
+        return this.repository.findByIdOptional(id);
+    }
 
-	@Transactional
-	public Matiere create(Matiere request) {
-		Matiere matiere = new Matiere();
+    @Transactional
+    public Matiere create(CreateOrUpdateMatiereRequest request) {
+        log.debug("Création de la matière {}", request.getLibelle());
 
-		matiere.setLibelle(request.getLibelle());
+        Matiere matiere = new Matiere();
 
-		this.repoMatiere.persist(matiere);
-		return matiere;
-	}
+        matiere.setLibelle(request.getLibelle());
 
-	@Transactional
-	public Matiere update(int id, Matiere request) {
-		log.debug("Mise à jour de la matiere {}", id);
+        this.repository.persist(matiere);
 
-		Matiere matiere = this.repoMatiere.findByIdOptional(id).orElseThrow();
-		// Matiere matiere =
-		// this.repoMatiere.findByIdOptional(id).orElseThrow(NotFoundException::new); //
-		// version plus optimisée pour avoir une vraie 404
+        return matiere;
+    }
 
-		matiere.setLibelle(request.getLibelle());
+    @Transactional
+    public Matiere update(int id, CreateOrUpdateMatiereRequest request) {
+        log.debug("Mise à jour de la matière {}", id);
 
-		this.repoMatiere.persist(matiere);
-		return matiere;
-	}
+        Matiere matiere = this.repository.findByIdOptional(id).orElseThrow(NotFoundException::new);
 
-	@Transactional
-	public boolean deleteById(Integer id) {
-		log.debug("Suppression de la matiere {}", id);
+        matiere.setLibelle(request.getLibelle());
 
-		try {
-			this.repoMatiere.deleteById(id);
-			return true;
-		}
-		catch(Exception ex){
-			log.error("Impossible de supprimer la matièere {} : {}", id, ex.getMessage());
-			return false;
-		}
-	}
+        this.repository.persist(matiere);
 
+        return matiere;
+    }
+
+    @Transactional
+    public boolean deleteById(int id) {
+        log.debug("Suppression de la matière {}", id);
+
+        try {
+            this.repository.deleteById(id);
+            return true;
+        }
+
+        catch (Exception ex) {
+            log.error("Impossible de supprimer la matière {} : {}", id, ex.getMessage());
+            return false;
+        }
+    }
 }

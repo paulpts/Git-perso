@@ -4,3 +4,6 @@
 target/
 .metadata
 .DS_Store
+privateKey.pem
+publicKey.pem
+rsaPrivateKey.pem

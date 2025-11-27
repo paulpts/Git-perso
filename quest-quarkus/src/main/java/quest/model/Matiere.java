@@ -1,6 +1,5 @@
 package quest.model;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,12 +13,12 @@ public class Matiere {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@Column(length = 50,nullable = false)
 	private String libelle;
-	
+
 	public Matiere() {}
-	
+
 	public Matiere(Integer id, String libelle) {
 		this.id = id;
 		this.libelle = libelle;
@@ -49,6 +48,4 @@ public class Matiere {
 	public String toString() {
 		return "Matiere [id=" + id + ", libelle=" + libelle + "]";
 	}
-
-	
 }
